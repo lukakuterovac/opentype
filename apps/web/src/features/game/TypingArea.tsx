@@ -6,6 +6,7 @@ export type CaretStyle = "line" | "block" | "underline" | "off";
 export interface TypingAreaProps {
   words: WordState[];
   wordIndex: number;
+  inputLength: number;
   caretStyle: CaretStyle;
   smoothCaret: boolean;
   fontFamily: string;
@@ -15,6 +16,7 @@ export interface TypingAreaProps {
 export function TypingArea({
   words,
   wordIndex,
+  inputLength,
   caretStyle,
   smoothCaret,
   fontFamily,
@@ -34,9 +36,7 @@ export function TypingArea({
       {words.map((word, wi) => {
         const isActive = wi === wordIndex;
         const caretAt =
-          isActive && showCaret
-            ? Math.min(word.chars.length, word.target.length)
-            : -1;
+          isActive && showCaret ? Math.min(inputLength, word.chars.length) : -1;
         const nodes: ReactNode[] = [];
         if (word.chars.length === 0) {
           nodes.push(

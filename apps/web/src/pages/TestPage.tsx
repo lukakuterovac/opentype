@@ -210,6 +210,7 @@ export function TestPage(): JSX.Element {
       <TypingArea
         words={engine.words}
         wordIndex={engine.wordIndex}
+        inputLength={engine.input.length}
         caretStyle={caretStyle}
         smoothCaret={smoothCaret}
         fontFamily={fontFamily || FONT_FAMILY_FALLBACK}
