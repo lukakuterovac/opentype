@@ -1,21 +1,21 @@
-export interface SelectOption<T extends string> {
-  value: T;
+export interface SelectOption {
+  value: string;
   label: string;
 }
 
-export interface SelectProps<T extends string> {
-  value: T;
-  options: ReadonlyArray<SelectOption<T>>;
-  onChange: (value: T) => void;
+export interface SelectProps {
+  value: string;
+  options: ReadonlyArray<SelectOption>;
+  onChange: (value: string) => void;
   ariaLabel?: string;
 }
 
-export function Select<T extends string>({
+export function Select({
   value,
   options,
   onChange,
   ariaLabel,
-}: SelectProps<T>): JSX.Element {
+}: SelectProps): JSX.Element {
   return (
     <div className="pill-select" role="group" aria-label={ariaLabel}>
       {options.map((option) => {
