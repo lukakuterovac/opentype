@@ -36,3 +36,25 @@ export interface Theme {
     "--accent-dim": string;
   };
 }
+
+export interface Settings {
+  // Theme
+  activeThemeId: string;
+  customThemes: Theme[];
+  randomTheme: "off" | "all" | "favorites";
+  favoriteThemeIds: string[];
+
+  // Appearance
+  fontFamily: string;
+  fontSize: string;
+  caretStyle: "line" | "block" | "underline" | "off";
+  smoothCaret: boolean;
+
+  // Behaviour
+  quickRestart: boolean;
+  blindMode: boolean;
+  showLiveWpm: boolean;
+  showLiveAccuracy: boolean;
+  stopOnError: "off" | "word" | "letter";
+  showKeyboardHints: boolean;
+}
