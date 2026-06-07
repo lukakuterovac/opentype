@@ -66,6 +66,11 @@ body {
   transition: color 0.15s;
 }
 
+.typing-area .char-placeholder {
+  display: inline-block;
+  width: 0;
+}
+
 .typing-area .char.correct {
   color: var(--char-correct);
 }
@@ -82,36 +87,30 @@ body {
 }
 
 .typing-area .caret {
-  position: absolute;
+  display: inline-block;
+  vertical-align: text-bottom;
   background: var(--accent);
   pointer-events: none;
-  z-index: 1;
-  will-change: transform;
 }
 
-.typing-area .caret.line {
+.typing-area .caret-line {
   width: 2px;
   height: 1.1em;
 }
 
-.typing-area .caret.block {
+.typing-area .caret-block {
   width: 1ch;
   height: 1.1em;
   opacity: 0.7;
 }
 
-.typing-area .caret.underline {
+.typing-area .caret-underline {
   width: 1ch;
   height: 2px;
-  position: absolute;
 }
 
-.typing-area .caret.blink {
+.typing-area .caret-blink {
   animation: caret-blink 1.1s step-end infinite;
-}
-
-.typing-area .caret.smooth {
-  transition: transform 80ms ease;
 }
 
 @keyframes caret-blink {
