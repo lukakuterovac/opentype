@@ -48,13 +48,36 @@ export function defaultSettings(): Settings {
   };
 }
 
+const REQUIRED_COLOR_KEYS: ReadonlyArray<keyof Theme["colors"]> = [
+  "--bg-base",
+  "--bg-surface",
+  "--bg-elevated",
+  "--bg-border",
+  "--bg-border-strong",
+  "--text-primary",
+  "--text-secondary",
+  "--text-muted",
+  "--text-faint",
+  "--text-ghost",
+  "--char-correct",
+  "--char-incorrect",
+  "--char-untyped",
+  "--accent",
+  "--accent-dim",
+];
+
 function isTheme(value: unknown): value is Theme {
   if (typeof value !== "object" || value === null) return false;
   const obj = value as Record<string, unknown>;
   if (typeof obj["id"] !== "string") return false;
   if (typeof obj["name"] !== "string") return false;
   if (typeof obj["dark"] !== "boolean") return false;
-  if (typeof obj["colors"] !== "object" || obj["colors"] === null) return false;
+  const colors = obj["colors"];
+  if (typeof colors !== "object" || colors === null) return false;
+  const colorObj = colors as Record<string, unknown>;
+  for (const key of REQUIRED_COLOR_KEYS) {
+    if (typeof colorObj[key] !== "string") return false;
+  }
   return true;
 }
 

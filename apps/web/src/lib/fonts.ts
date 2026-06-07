@@ -8,8 +8,6 @@ const FONT_URLS: Record<string, string> = {
   Inconsolata: "Inconsolata:wght@400;500",
 };
 
-const loadedFonts = new Set<string>([DEFAULT_FONT_FAMILY]);
-
 const FONT_LINKS: Record<string, string> = {
   "JetBrains Mono": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap",
   "Fira Code": "https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap",
@@ -27,24 +25,20 @@ function findExistingLink(href: string): HTMLLinkElement | null {
 }
 
 export function ensureFontLoaded(fontFamily: string): void {
-  if (loadedFonts.has(fontFamily)) return;
   if (typeof document === "undefined") return;
+  if (fontFamily === DEFAULT_FONT_FAMILY) return;
 
   const href = FONT_LINKS[fontFamily];
-  if (!href) {
-    loadedFonts.add(fontFamily);
-    return;
-  }
+  if (!href) return;
 
   const fullHref = href.startsWith("http") ? href : `https://fonts.googleapis.com${href}`;
-  if (!findExistingLink(fullHref)) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = fullHref;
-    link.dataset.otFont = fontFamily;
-    document.head.appendChild(link);
-  }
-  loadedFonts.add(fontFamily);
+  if (findExistingLink(fullHref)) return;
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = fullHref;
+  link.dataset.otFont = fontFamily;
+  document.head.appendChild(link);
 }
 
 export function applyFontFamily(fontFamily: string): void {
