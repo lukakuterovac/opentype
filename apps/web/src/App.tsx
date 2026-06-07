@@ -1,10 +1,16 @@
+import { Route, Routes } from "react-router-dom";
+import { Nav } from "./components/Nav";
+import { TestPage } from "./pages/TestPage";
+import { SettingsPage } from "./pages/SettingsPage";
+
 export function App(): JSX.Element {
   return (
-    <main className="flex h-full flex-col items-center justify-center gap-2">
-      <h1 className="font-mono text-3xl font-medium tracking-tight">
-        open<span className="text-accent">type</span>
-      </h1>
-      <p className="text-text-muted text-sm">Scaffold ready.</p>
-    </main>
+    <div className="flex h-full flex-col">
+      <Nav />
+      <Routes>
+        <Route path="/" element={<TestPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Routes>
+    </div>
   );
 }

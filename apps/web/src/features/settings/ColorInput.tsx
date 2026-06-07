@@ -6,11 +6,7 @@ export interface ColorInputProps {
 
 const HEX_PATTERN = /^#([0-9a-fA-F]{6})$/;
 
-export function isValidHex(value: string): boolean {
-  return HEX_PATTERN.test(value);
-}
-
-export function normalizeHex(value: string): string | null {
+function normalizeHex(value: string): string | null {
   let trimmed = value.trim();
   if (!trimmed.startsWith("#")) trimmed = `#${trimmed}`;
   if (HEX_PATTERN.test(trimmed)) return trimmed.toUpperCase();
