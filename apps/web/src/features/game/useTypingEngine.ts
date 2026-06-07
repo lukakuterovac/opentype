@@ -152,19 +152,36 @@ export function useTypingEngine(options: UseTypingEngineOptions): UseTypingEngin
   const isCompleteRef = useRef(false);
   const resultFiredRef = useRef(false);
   const onCompleteRef = useRef(onComplete);
+  const prevWordsRef = useRef<string[]>(targetWords);
+  const modeRef = useRef(mode);
+  const durationRef = useRef(duration);
 
+  modeRef.current = mode;
+  durationRef.current = duration;
   onCompleteRef.current = onComplete;
 
-  const finishTest = useCallback(() => {
+  const finishTestRef = useRef<() => void>(() => {});
+  finishTestRef.current = () => {
     if (isCompleteRef.current) return;
     isCompleteRef.current = true;
     const start = startTimeRef.current;
-    const finalElapsed = start !== null ? performance.now() - start : 0;
+    const finalElapsed = start !== null ? Date.now() - start : 0;
     setElapsedMs(finalElapsed);
     setIsComplete(true);
+  };
+
+  const finishTest = useCallback(() => {
+    finishTestRef.current();
   }, []);
 
   useEffect(() => {
+    if (prevWordsRef.current === targetWords) return;
+    const prev = prevWordsRef.current;
+    const changed =
+      prev.length !== targetWords.length ||
+      prev.some((w, i) => w !== targetWords[i]);
+    if (!changed) return;
+    prevWordsRef.current = targetWords;
     setInputs(targetWords.map(() => ""));
     setWordIndex(0);
     setIsActive(false);
@@ -173,29 +190,25 @@ export function useTypingEngine(options: UseTypingEngineOptions): UseTypingEngin
     startTimeRef.current = null;
     isCompleteRef.current = false;
     resultFiredRef.current = false;
-  }, [targetWords]);
+  });
 
   useEffect(() => {
     if (!isActive || isComplete) return;
-
-    const interval = setInterval(() => {
+    const id = setInterval(() => {
       const start = startTimeRef.current;
       if (start === null) return;
-      const now = performance.now();
-      const elapsed = now - start;
-      setElapsedMs(elapsed);
-
-      if (mode === "time" && elapsed >= duration * SECONDS_TO_MS) {
-        finishTest();
+      const elapsed = Date.now() - start;
+      setElapsedMs(modeRef.current === "time" ? Math.min(elapsed, durationRef.current * SECONDS_TO_MS) : elapsed);
+      if (modeRef.current === "time" && elapsed >= durationRef.current * SECONDS_TO_MS) {
+        finishTestRef.current();
       }
     }, TICK_INTERVAL_MS);
-
-    return () => clearInterval(interval);
-  }, [isActive, isComplete, mode, duration, finishTest]);
+    return () => clearInterval(id);
+  }, [isActive, isComplete]);
 
   const startIfNeeded = useCallback(() => {
     if (startTimeRef.current === null && !isCompleteRef.current) {
-      startTimeRef.current = performance.now();
+      startTimeRef.current = Date.now();
       setIsActive(true);
     }
   }, []);
@@ -276,20 +289,15 @@ export function useTypingEngine(options: UseTypingEngineOptions): UseTypingEngin
   const totalTyped = stats.correctChars + stats.incorrectChars + stats.extraChars;
   const errors = stats.incorrectChars + stats.extraChars + stats.missedChars;
 
-  const cappedElapsedMs =
-    mode === "time" ? Math.min(elapsedMs, duration * SECONDS_TO_MS) : elapsedMs;
-
   const wpm = useMemo(
-    () => computeWpm(totalTyped, errors, cappedElapsedMs),
-    [totalTyped, errors, cappedElapsedMs],
+    () => computeWpm(totalTyped, errors, elapsedMs),
+    [totalTyped, errors, elapsedMs],
   );
 
   const accuracy = totalTyped === 0 ? 100 : (stats.correctChars / totalTyped) * 100;
 
   const timeRemaining =
-    mode === "time"
-      ? Math.max(0, duration * SECONDS_TO_MS - elapsedMs) / SECONDS_TO_MS
-      : 0;
+    mode === "time" ? Math.max(0, duration * SECONDS_TO_MS - elapsedMs) / SECONDS_TO_MS : 0;
 
   useEffect(() => {
     if (!isComplete) return;
@@ -306,7 +314,7 @@ export function useTypingEngine(options: UseTypingEngineOptions): UseTypingEngin
       missedChars: stats.missedChars,
       mode,
       duration,
-      elapsedMs: cappedElapsedMs,
+      elapsedMs,
     });
   }, [
     isComplete,
@@ -316,7 +324,7 @@ export function useTypingEngine(options: UseTypingEngineOptions): UseTypingEngin
     stats,
     mode,
     duration,
-    cappedElapsedMs,
+    elapsedMs,
   ]);
 
   return {
@@ -326,7 +334,7 @@ export function useTypingEngine(options: UseTypingEngineOptions): UseTypingEngin
     isActive,
     isComplete,
     timeRemaining,
-    elapsedMs: cappedElapsedMs,
+    elapsedMs,
     correctChars: stats.correctChars,
     incorrectChars: stats.incorrectChars,
     extraChars: stats.extraChars,
