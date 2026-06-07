@@ -84,7 +84,7 @@ describe("SettingsPage", () => {
 
   it("updates font family via the appearance select", () => {
     renderPage();
-    const row = screen.getByText("font family").closest(".settings-row");
+    const row = screen.getByText("font family").closest<HTMLElement>(".settings-row");
     expect(row).not.toBeNull();
     const fira = within(row!).getByRole("button", { name: "Fira Code" });
     fireEvent.click(fira);
@@ -93,7 +93,7 @@ describe("SettingsPage", () => {
 
   it("updates caret style via the appearance select", () => {
     renderPage();
-    const row = screen.getByText("caret style").closest(".settings-row");
+    const row = screen.getByText("caret style").closest<HTMLElement>(".settings-row");
     expect(row).not.toBeNull();
     const block = within(row!).getByRole("button", { name: "block" });
     fireEvent.click(block);
@@ -102,7 +102,7 @@ describe("SettingsPage", () => {
 
   it("toggles a behaviour switch", () => {
     renderPage();
-    const row = screen.getByText("quick restart").closest(".settings-row");
+    const row = screen.getByText("quick restart").closest<HTMLElement>(".settings-row");
     expect(row).not.toBeNull();
     const toggle = within(row!).getByRole("switch");
     expect(toggle.getAttribute("aria-checked")).toBe("false");
@@ -128,7 +128,7 @@ describe("SettingsPage", () => {
 
   it("persists changes to localStorage via the opentype-settings key", () => {
     renderPage();
-    const row = screen.getByText("blind mode").closest(".settings-row");
+    const row = screen.getByText("blind mode").closest<HTMLElement>(".settings-row");
     const toggle = within(row!).getByRole("switch");
     fireEvent.click(toggle);
     const stored = JSON.parse(localStorage.getItem("opentype-settings") ?? "{}");
@@ -139,7 +139,7 @@ describe("SettingsPage", () => {
     renderPage();
     const row = screen
       .getByText("random theme on test complete")
-      .closest(".settings-row");
+      .closest<HTMLElement>(".settings-row");
     expect(row).not.toBeNull();
     const allButton = within(row!).getByRole("button", { name: "all" });
     fireEvent.click(allButton);
