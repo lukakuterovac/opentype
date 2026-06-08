@@ -1,0 +1,61 @@
+{
+  "version": "6.1.0",
+  "steps": [
+    {
+      "tag": "CreateSchema",
+      "schema": "public"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "User",
+      "columns": [
+        { "name": "id", "type": "TEXT", "default": "gen_random_uuid()", "primaryKey": true },
+        { "name": "email", "type": "TEXT", "unique": true },
+        { "name": "username", "type": "TEXT", "unique": true },
+        { "name": "createdAt", "type": "TIMESTAMP(3)", "default": "now()" },
+        { "name": "settings", "type": "JSONB" }
+      ]
+    },
+    {
+      "tag": "CreateTable",
+      "table": "Result",
+      "columns": [
+        { "name": "id", "type": "TEXT", "default": "gen_random_uuid()", "primaryKey": true },
+        { "name": "userId", "type": "TEXT" },
+        { "name": "wpm", "type": "DOUBLE PRECISION" },
+        { "name": "accuracy", "type": "DOUBLE PRECISION" },
+        { "name": "mode", "type": "TEXT" },
+        { "name": "duration", "type": "INTEGER" },
+        { "name": "timestamp", "type": "TIMESTAMP(3)", "default": "now()" }
+      ]
+    },
+    {
+      "tag": "CreateIndex",
+      "index": {
+        "name": "Result_userId_idx",
+        "table": "Result",
+        "columns": ["userId"]
+      }
+    },
+    {
+      "tag": "CreateIndex",
+      "index": {
+        "name": "Result_mode_duration_wpm_idx",
+        "table": "Result",
+        "columns": ["mode", "duration", "wpm"]
+      }
+    },
+    {
+      "tag": "CreateForeignKey",
+      "foreignKey": {
+        "name": "Result_userId_fkey",
+        "table": "Result",
+        "columns": ["userId"],
+        "referencedTable": "User",
+        "referencedColumns": ["id"],
+        "onDelete": "RESTRICT",
+        "onUpdate": "CASCADE"
+      }
+    }
+  ]
+}
